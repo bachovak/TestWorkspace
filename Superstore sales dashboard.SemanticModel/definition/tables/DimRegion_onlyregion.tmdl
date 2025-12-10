@@ -1,0 +1,29 @@
+table DimRegion_onlyregion
+	lineageTag: 26b18e38-81d3-4bee-aeba-abc2b75123ab
+
+	column Region
+		dataType: string
+		lineageTag: 99f32534-3b5d-488d-8d12-091cd0755e15
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimRegion_onlyregion = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\v-krb\OneDrive\Power BI portfolio\Superstore sales dashboard\Sample - Superstore.csv"),[Delimiter=",", Columns=21, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Promoted Headers",{"City", "State", "Region"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Added Custom" = Table.AddColumn(#"Removed Duplicates", "RegionID", each [Region] & "_" & [State]& "_" & [City]),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Added Custom",{"Region"}),
+				    #"Removed Duplicates1" = Table.Distinct(#"Removed Other Columns1")
+				in
+				    #"Removed Duplicates1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,26 @@
+table DimShipMode
+	lineageTag: 540902b8-ad4b-42b8-bf20-e935e713f1e9
+
+	column 'Ship Mode'
+		dataType: string
+		lineageTag: 2bb81c94-9c5b-4d44-b775-563acea9cd85
+		summarizeBy: none
+		sourceColumn: Ship Mode
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimShipMode = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\v-krb\OneDrive\Power BI portfolio\Superstore sales dashboard\Sample - Superstore.csv"),[Delimiter=",", Columns=21, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Promoted Headers",{"Ship Mode"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns")
+				in
+				    #"Removed Duplicates"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

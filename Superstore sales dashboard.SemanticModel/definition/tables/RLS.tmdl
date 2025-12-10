@@ -1,0 +1,48 @@
+table RLS
+	lineageTag: 8ecdfc4a-0e0b-4313-8e3f-bbca1d6ceb75
+
+	column email
+		dataType: string
+		lineageTag: 28146984-c522-4227-ac75-4c229be5fb22
+		summarizeBy: none
+		sourceColumn: email
+
+		annotation SummarizationSetBy = Automatic
+
+	column role
+		dataType: string
+		lineageTag: ae69acdd-3f38-4cb2-8580-d6d3dafc89db
+		summarizeBy: none
+		sourceColumn: role
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 0fc0522a-2e99-48fb-b0c2-dbfa0d57090f
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column region
+		dataType: string
+		lineageTag: 46ce21ec-caf4-447c-8367-8f7d5b7cd312
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition RLS = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("dY/BCsIwDIbfpeexZ5gbeHAIggcPY4ffUru6LoG08/nNpoKinv6E70tIus6MyK7yE0IsLU+mMHsQvBOtWkUaiNH0RWeusOOHeUR0SXOnQOPkUl7FswTQT7NeiGbjKAsea0HkfsobBUvLcx5W0zIRy59jmxW+ndtKSDkQatiBb6i2wc8uCA4sefaIJdMUrHDiS/5+/Tn82tffAQ==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [email = _t, role = _t, name = _t, region = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"email", type text}, {"role", type text}, {"name", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

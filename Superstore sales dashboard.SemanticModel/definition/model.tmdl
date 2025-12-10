@@ -1,0 +1,29 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-GB
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["SalesFact","DimProduct","DimCustomer","DimRegion","DimShipMode","DimDate","RLS","DimRegion_onlyregion"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["Copilot","CopilotMeasureDescriptions","DaxQueryView_Desktop","DaxCopilot_Change_Accepted_In_Desktop","TMDLView_Desktop"]
+
+ref table SalesFact
+ref table DateTableTemplate_8424c758-e4f4-4afb-96b1-05ef3739001d
+ref table DimProduct
+ref table DimCustomer
+ref table DimRegion
+ref table DimShipMode
+ref table DimDate
+ref table LocalDateTable_378928ee-30e0-4719-896f-a92541e2704e
+ref table RLS
+ref table DimRegion_onlyregion
+
+ref role Security
+
+ref cultureInfo en-US
+

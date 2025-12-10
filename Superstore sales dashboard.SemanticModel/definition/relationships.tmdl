@@ -1,0 +1,29 @@
+relationship AutoDetected_ef235b36-ff36-484d-9829-d750d4b6705d
+	fromColumn: SalesFact.'Customer ID'
+	toColumn: DimCustomer.'Customer ID'
+
+relationship 287ae9ff-312a-bb3d-62d6-3f3435788c72
+	fromColumn: SalesFact.'Product ID'
+	toColumn: DimProduct.'Product ID'
+
+relationship 62d03c16-e7dd-91b3-f90f-720545baa98b
+	fromColumn: SalesFact.RegionID
+	toColumn: DimRegion.RegionID
+
+relationship fe2646c8-90ee-c3dc-cfeb-caf2f7b42654
+	fromColumn: SalesFact.Sales
+	toColumn: DimShipMode.'Ship Mode'
+
+relationship a2ba2480-1e1c-407b-a8d4-46a7b71943a6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimDate.Date
+	toColumn: LocalDateTable_378928ee-30e0-4719-896f-a92541e2704e.Date
+
+relationship 2004ced1-05de-fe16-a3a3-e8c438cd8b55
+	fromColumn: SalesFact.'Order Date'
+	toColumn: DimDate.Date
+
+relationship d63b1d35-a59b-476e-e017-86fd96cd0314
+	fromColumn: RLS.region
+	toColumn: DimRegion_onlyregion.Region
+

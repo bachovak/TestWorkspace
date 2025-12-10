@@ -1,0 +1,57 @@
+table Courses
+	lineageTag: c44f5b22-c82c-42c9-b4f8-78e85d5d2d14
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 20af5bbb-2acb-4a2f-a70c-b7564878a199
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Title
+		dataType: string
+		lineageTag: 0af0909d-6b9a-4212-90ff-5ef4efe67cc7
+		summarizeBy: none
+		sourceColumn: Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Created at'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 84e16133-28e6-4fd1-8627-2ea1e3aed8b5
+		summarizeBy: none
+		sourceColumn: Created at
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Column6
+		dataType: string
+		lineageTag: 2c4e71e8-c028-4138-9028-e0c36eaaafa8
+		summarizeBy: none
+		sourceColumn: Column6
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Courses = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\v-krb\OneDrive\Power BI portfolio\UPWORK\Data Visualisation\export_69145465bb687.xlsx"), null, true),
+				    Courses_Sheet = Source{[Item="Courses",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Courses_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID", Int64.Type}, {"Title", type text}, {"Created at", type datetime}, {"Column4", type any}, {"Column5", type logical}, {"Column6", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column4", "Column5"}),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Removed Columns"),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Removed Errors",{{"Created at", type date}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

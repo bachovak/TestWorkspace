@@ -1,0 +1,21 @@
+role Security
+	modelPermission: read
+
+	tablePermission SalesFact =
+			[Region] IN
+			    SELECTCOLUMNS(
+			        FILTER(
+			            RLS,
+			            RLS[Email] = USERPRINCIPALNAME()
+			        ),
+			        "RegionKey", RELATED(DimRegion_onlyregion[Region])
+			    )
+			    ||
+			    USERPRINCIPALNAME() IN
+			        SELECTCOLUMNS(
+			            FILTER(RLS, RLS[Role] = "Manager"),
+			            "ManagerEmail", RLS[Email]
+			        )
+
+	annotation PBI_Id = 6787217d71124493b03692fe4e70d955
+

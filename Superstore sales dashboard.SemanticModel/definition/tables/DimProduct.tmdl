@@ -1,0 +1,51 @@
+table DimProduct
+	lineageTag: c61d76b2-70f3-43c8-8a22-9cad16efafd7
+
+	column 'Product ID'
+		dataType: string
+		lineageTag: cb373cbf-47f9-4537-b07a-baad08639b86
+		summarizeBy: none
+		sourceColumn: Product ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: 0ebbcb03-c2da-4070-90de-669510439740
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sub-Category
+		dataType: string
+		lineageTag: 6140ff76-4c69-454b-939e-e2a411c3c792
+		summarizeBy: none
+		sourceColumn: Sub-Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Name'
+		dataType: string
+		lineageTag: 42b3170c-05f8-4093-b54d-397fd4d933be
+		summarizeBy: none
+		sourceColumn: Product Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimProduct = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\v-krb\OneDrive\Power BI portfolio\Superstore sales dashboard\Sample - Superstore.csv"),[Delimiter=",", Columns=21, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Promoted Headers",{"Product ID", "Category", "Sub-Category", "Product Name"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Removed Duplicates1" = Table.Distinct(#"Removed Duplicates", {"Product ID"})
+				in
+				    #"Removed Duplicates1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

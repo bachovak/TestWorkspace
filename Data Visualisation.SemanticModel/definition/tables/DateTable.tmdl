@@ -1,0 +1,76 @@
+table DateTable
+	lineageTag: e1961af3-1a0a-4356-944e-de4e69634ff2
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: General Date
+		lineageTag: fb672dff-7827-4251-b1fd-7adb91dc635b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		formatString: 0
+		lineageTag: 644ca804-f10e-4f64-8919-dd5a824653e5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		lineageTag: 00448121-7dda-4662-9f7d-cd8794efaa2a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month]
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		formatString: 0
+		lineageTag: 0ceb1fbe-683e-484e-8923-94dae5bc85e9
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		formatString: 0
+		lineageTag: e4b32f3d-748e-4eda-b2fb-a7b577b7efc9
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Weekday
+		lineageTag: d3a93e38-2d9c-4c01-947a-c0d774aec021
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Weekday]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DateTable = calculated
+		mode: import
+		source =
+				
+				VAR StartDate = DATE(2025, 5, 1)
+				VAR EndDate = TODAY()
+				RETURN
+				ADDCOLUMNS(
+				    CALENDAR(StartDate, EndDate),
+				    "Year", YEAR([Date]),
+				    "Month", FORMAT([Date], "MMMM"),
+				    "Month Number", MONTH([Date]),
+				    "Day", DAY([Date]),
+				    "Weekday", FORMAT([Date], "dddd")
+				)
+
+	annotation PBI_Id = 8ddd295b37644972928223d48541fbd4
+

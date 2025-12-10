@@ -1,0 +1,200 @@
+table SalesFact
+	lineageTag: a59bbe14-1dfb-4c81-a186-0cfa3aa9d40e
+
+	measure 'Total Sales' = SUM(SalesFact[Sales])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 35aecdd4-b6d6-4da3-947d-3ca4457ccfd4
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Total Profit' = SUM(SalesFact[Profit])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 410aba31-de40-487c-8b7e-ac54b7cf2b3b
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Profit Margin %' = DIVIDE(SUM(SalesFact[Profit]), SUM(SalesFact[Sales]))
+		formatString: #,0.00%;-#,0.00%;#,0.00%
+		lineageTag: c4da61f1-ca55-4190-a6f2-3995ff80e0fd
+
+		changedProperty = IsHidden
+
+	measure 'Total Quantity' = SUM(SalesFact[Quantity])
+		formatString: 0
+		lineageTag: 74e855c2-e4d1-46e6-8c90-fa05df4e4b9d
+
+	/// Calculates the total profit for sales transactions where the profit is negative, highlighting loss-making sales.
+	measure 'Negative Profit' =
+			
+			CALCULATE([Total Profit], FILTER('SalesFact', 'SalesFact'[Profit] < 0))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 7691c7e3-2050-4d61-9340-29d0eae7d096
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// Calculates the percentage of sales transactions in the SalesFact table where profit is negative.
+	measure '% Negative Profit Items' =
+			
+			DIVIDE(
+			    COUNTROWS(FILTER('SalesFact', 'Salesfact'[Profit] < 0)),
+			    COUNTROWS('SalesFact')
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 812eb5cb-b5ba-481b-80f2-cf3167ec5d42
+
+	column 'Order ID'
+		dataType: string
+		isHidden
+		lineageTag: 00117210-388d-4420-9694-57bb1ea70e6b
+		summarizeBy: none
+		sourceColumn: Order ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Date'
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 31faccf0-a484-4b63-8eee-136e1b3050a3
+		summarizeBy: none
+		sourceColumn: Order Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Customer ID'
+		dataType: string
+		isHidden
+		lineageTag: 102ede28-3b19-48c7-b743-1c8739144c5c
+		summarizeBy: none
+		sourceColumn: Customer ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		isHidden
+		lineageTag: 516fd845-ca9a-4f57-8ebf-c10f45e2a979
+		summarizeBy: none
+		sourceColumn: Region
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product ID'
+		dataType: string
+		isHidden
+		lineageTag: bc400a90-6099-4f2f-8ce1-87ba06e5db49
+		summarizeBy: none
+		sourceColumn: Product ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sales
+		dataType: decimal
+		isHidden
+		formatString: "£"#,0.###############;-"£"#,0.###############;"£"#,0.###############
+		lineageTag: 51ecf92a-7130-48ca-ab1f-613c3bbdfe36
+		summarizeBy: none
+		sourceColumn: Sales
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
+
+	column Quantity
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: da7b3184-84ef-46db-975c-4c78269cbdcc
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Discount
+		dataType: double
+		isHidden
+		lineageTag: 37353055-933c-401c-98e4-08cb6d35bc91
+		summarizeBy: sum
+		sourceColumn: Discount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column RegionID
+		dataType: string
+		isHidden
+		lineageTag: 97e1dc84-acdb-4510-b30d-cba6e9dd062e
+		summarizeBy: none
+		sourceColumn: RegionID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ship Mode'
+		dataType: string
+		isHidden
+		lineageTag: 482041fe-48af-4610-a27f-ae6814edcbe5
+		summarizeBy: none
+		sourceColumn: Ship Mode
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Profit
+		dataType: decimal
+		isHidden
+		lineageTag: 5394d57e-25bd-4052-a1a9-aadfeee7efdf
+		summarizeBy: sum
+		sourceColumn: Profit
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition SalesFact = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\v-krb\OneDrive\Power BI portfolio\Superstore sales dashboard\Sample - Superstore.csv"),[Delimiter=",", Columns=21, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Added Custom" = Table.AddColumn(#"Promoted Headers", "RegionID", each [Region] & "_" & [State]& "_" & [City]),
+				    #"Changed Type with Locale" = Table.TransformColumnTypes(#"Added Custom", {{"Order Date", type date}}, "en-US"),
+				    #"Changed Type with Locale1" = Table.TransformColumnTypes(#"Changed Type with Locale", {{"Ship Date", type date}}, "en-US"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Changed Type with Locale1",{{"Postal Code", Int64.Type}, {"Quantity", Int64.Type}, {"Discount", type number}, {"Profit", Currency.Type}, {"Row ID", Int64.Type}, {"Sales", Currency.Type}}),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Changed Type",{"Order ID", "Order Date", "Ship Mode", "Customer ID", "Region", "Product ID", "Sales", "Quantity", "Discount", "Profit", "RegionID"})
+				in
+				    #"Removed Other Columns"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

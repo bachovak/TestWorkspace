@@ -1,0 +1,25 @@
+relationship d02f8dd8-f9e6-7a29-5891-129b6abbc09b
+	fromColumn: 'Episode Completions'.'User ID'
+	toColumn: Users.ID
+
+relationship 2a7e05b1-d859-9732-89fc-072a13aaf0ed
+	fromColumn: 'Episode Completions'.'Course ID'
+	toColumn: Courses.ID
+
+relationship 38f13b28-8bbf-bdf4-4989-718566172b66
+	fromColumn: 'Course Completions'.'Course ID'
+	toColumn: Courses.ID
+
+relationship 90a371b8-bd1e-5ac5-fb63-346c1294c615
+	fromColumn: 'Course Completions'.'Started at'
+	toColumn: DateTable.Date
+
+relationship 77ef7285-1dc2-8c6b-6a76-fe6cbeb8b0e7
+	fromColumn: 'Episode Completions'.'Lesson ID'
+	toColumn: Episodes.ID
+
+relationship bca9cc95-b326-e25d-f9d2-c5fb4ed3e69c
+	isActive: false
+	fromColumn: 'Course Completions'.'Completed at'
+	toColumn: DateTable.Date
+
