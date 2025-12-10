@@ -1,0 +1,80 @@
+table Users
+	lineageTag: 42d351f7-d2be-4712-b44f-2ef7357137b4
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 5ddf131d-0451-4aec-8bd7-4b2db2953e5b
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column E-mail
+		dataType: string
+		lineageTag: b2186ab9-f51a-480d-810a-28e32fb2cb7e
+		summarizeBy: none
+		sourceColumn: E-mail
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'First name'
+		dataType: string
+		lineageTag: 73d98fab-452d-4b7c-b4b9-0e5b157a04e9
+		summarizeBy: none
+		sourceColumn: First name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Last name'
+		dataType: string
+		lineageTag: dcbcf953-79a4-4b4e-8dc1-95d2970a23bf
+		summarizeBy: none
+		sourceColumn: Last name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Telephone
+		dataType: string
+		lineageTag: 2d3599a6-bc46-43ca-be1e-26a0d06eabd0
+		summarizeBy: none
+		sourceColumn: Telephone
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Created at'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cef53f56-c255-42c8-8797-85afe26d91d7
+		summarizeBy: none
+		sourceColumn: Created at
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column sso_novonordisk
+		dataType: string
+		lineageTag: d967a556-1269-43bf-9505-71b9e56c2b5a
+		summarizeBy: none
+		sourceColumn: sso_novonordisk
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Users = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\v-krb\OneDrive\Power BI portfolio\UPWORK\Data Visualisation\export_69145465bb687.xlsx"), null, true),
+				    Users_Sheet = Source{[Item="Users",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Users_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID", Int64.Type}, {"E-mail", type text}, {"First name", type text}, {"Last name", type text}, {"Telephone", type any}, {"Created at", type datetime}, {"sso_novonordisk", type text}}),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Changed Type"),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Removed Errors",{{"Created at", type date}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

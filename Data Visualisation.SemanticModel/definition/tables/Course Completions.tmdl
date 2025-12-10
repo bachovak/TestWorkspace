@@ -1,0 +1,187 @@
+table 'Course Completions'
+	lineageTag: 15cad20d-ae06-4db5-900d-c6a4e26031f5
+
+	measure 'Total Course Completions' = SUM('Course Completions'[Completed])
+		formatString: 0
+		displayFolder: Measures
+		lineageTag: 47f568b3-92f6-4c49-a979-f6439f3b7d67
+
+	measure 'Total Episode Completions' = ```
+			COUNTROWS(FILTER('Episode Completions', 'Episode Completions'[Completed] = TRUE()))
+			
+			```
+		formatString: 0
+		displayFolder: Measures
+		lineageTag: 98b3eb43-333d-4306-91a7-596f7adf4e2f
+
+	measure 'Active Users' =
+			
+			CALCULATE(
+			    DISTINCTCOUNT('Users'[ID]),
+			    FILTER(
+			        'Users',
+			        'Users'[ID] IN
+			            UNION(
+			                SELECTCOLUMNS('Course Completions', "UserID", 'Course Completions'[User ID]),
+			                SELECTCOLUMNS('Episode Completions', "UserID", 'Episode Completions'[User ID])
+			            )
+			    )
+			)
+		formatString: 0
+		displayFolder: Measures
+		lineageTag: 24b76da3-d1b3-4ce1-98c9-3f7fa9842516
+
+	measure 'Average Progress per Course' = AVERAGE('Course Completions'[Progress])
+		displayFolder: Measures
+		lineageTag: 988f5a65-553f-4b9e-991d-5b14e46f84f6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Course Completion Rate Over time' =
+			
+			DIVIDE(
+			    CALCULATE(
+			        SUM('Course Completions'[Completed]),
+			        USERELATIONSHIP('Course Completions'[Completed at],DateTable[Date])),
+			            CALCULATE(
+			                COUNTROWS('Course Completions'),
+			                USERELATIONSHIP('Course Completions'[Completed at],DateTable[Date])
+			            ))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Measures
+		lineageTag: ba083b3d-f279-482b-b1e3-4df5f057ca6c
+
+	measure 'Episode Completion Rate' =
+			
+			DIVIDE(
+			    COUNTROWS(FILTER('Episode Completions', 'Episode Completions'[Completed] = TRUE())),
+			    CALCULATE(COUNTROWS('Episode Completions'))
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Measures
+		lineageTag: a018cc55-d5ca-4540-9d2f-4da9006a9bf9
+
+	measure 'Course Completions per Month' =
+			
+			CALCULATE(
+			    SUM('Course Completions'[Completed]),
+			    ALLEXCEPT('Course Completions', 'Course Completions'[Completed at])
+			)
+		formatString: 0
+		displayFolder: Measures
+		lineageTag: 129a9a42-8022-404f-9b9a-83a767872ba5
+
+	measure 'User Retention Rate' =
+			
+			VAR CurrentMonth = MAX('DateTable'[Month Number])
+			VAR CurrentYear = MAX('DateTable'[Year])
+			VAR PrevMonth = IF(CurrentMonth = 1, 12, CurrentMonth - 1)
+			VAR PrevYear = IF(CurrentMonth = 1, CurrentYear - 1, CurrentYear)
+			VAR UsersPrevMonth =
+			    CALCULATETABLE(
+			        VALUES('Course Completions'[User ID]),
+			        'DateTable'[Month Number] = PrevMonth,
+			        'DateTable'[Year] = PrevYear
+			    )
+			VAR UsersCurrentMonth =
+			    CALCULATETABLE(
+			        VALUES('Course Completions'[User ID]),
+			        'DateTable'[Month Number] = CurrentMonth,
+			        'DateTable'[Year] = CurrentYear
+			    )
+			VAR RetainedUsers =
+			    INTERSECT(UsersPrevMonth, UsersCurrentMonth)
+			RETURN
+			DIVIDE(
+			    COUNTROWS(RetainedUsers),
+			    COUNTROWS(UsersPrevMonth)
+			)
+		displayFolder: Measures
+		lineageTag: acfac7dd-4739-4471-97d8-99bc79da688f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Test Completed Count' =
+			
+			CALCULATE(
+			    COUNTROWS('Course Completions'),
+			    USERELATIONSHIP('Course Completions'[Completed at], 'DateTable'[Date])
+			)
+		formatString: 0
+		lineageTag: 7839a1ac-7f97-4dcb-a232-8e9527ecb766
+
+	column 'User ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 2c3b3cc4-be70-4a3b-ad83-aea8e1785ca5
+		summarizeBy: count
+		sourceColumn: User ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Course ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1502f288-78f6-456f-aa42-a876790359fe
+		summarizeBy: none
+		sourceColumn: Course ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Progress
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 1980ce4b-055e-491a-8c09-6760285c6306
+		summarizeBy: none
+		sourceColumn: Progress
+
+		annotation SummarizationSetBy = Automatic
+
+	column Completed
+		dataType: int64
+		formatString: 0
+		lineageTag: d6f79a9c-6291-4350-8816-31603ea9c8d7
+		summarizeBy: sum
+		sourceColumn: Completed
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Completed at'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: aec1eb6e-f391-49dc-8036-a9b8a6b3e823
+		summarizeBy: none
+		sourceColumn: Completed at
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Started at'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 74c1ac97-27e5-4be9-844a-ca01615f70d1
+		summarizeBy: none
+		sourceColumn: Started at
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Course Completions' = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\v-krb\OneDrive\Power BI portfolio\UPWORK\Data Visualisation\export_69145465bb687.xlsx"), null, true),
+				    #"Course Completions_Sheet" = Source{[Item="Course Completions",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Course Completions_Sheet", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"User ID", Int64.Type}, {"Course ID", Int64.Type}, {"Progress", Int64.Type}, {"Completed", Int64.Type}, {"Completed at", type datetime}, {"Started at", type datetime}}),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Changed Type"),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Removed Errors",{{"Completed at", type date}, {"Started at", type date}, {"Progress", type logical}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

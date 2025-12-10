@@ -1,0 +1,78 @@
+table 'Episode Completions'
+	lineageTag: 99980d85-066d-4b1a-a167-c1b5973e6620
+
+	column 'User ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 28d4a728-5728-450c-a2e3-1f39335cf1ff
+		summarizeBy: none
+		sourceColumn: User ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Lesson ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 936f2297-0f89-417f-9ca5-ec4c3a37ac93
+		summarizeBy: none
+		sourceColumn: Lesson ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Completed
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 790e6e41-2554-4aee-81f5-cd75b18ab938
+		summarizeBy: none
+		sourceColumn: Completed
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Course ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: d214adac-2da8-43a3-b421-0c102f732911
+		summarizeBy: none
+		sourceColumn: Course ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Created at'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: eaccd87f-feb0-47ef-a23e-5ee3448b05c0
+		summarizeBy: none
+		sourceColumn: Created at
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Last watched at'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 8e99e25e-9b10-40a3-beca-6c7c08e0df0b
+		summarizeBy: none
+		sourceColumn: Last watched at
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Episode Completions' = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\v-krb\OneDrive\Power BI portfolio\UPWORK\Data Visualisation\export_69145465bb687.xlsx"), null, true),
+				    #"Episode Completions_Sheet" = Source{[Item="Episode Completions",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Episode Completions_Sheet", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"User ID", Int64.Type}, {"Lesson ID", Int64.Type}, {"Completed", type logical}, {"Course ID", Int64.Type}, {"Created at", type datetime}, {"Last watched at", type datetime}}),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Changed Type"),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Removed Errors",{{"Created at", type date}, {"Last watched at", type date}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

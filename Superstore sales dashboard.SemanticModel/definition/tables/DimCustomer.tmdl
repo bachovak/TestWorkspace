@@ -1,0 +1,42 @@
+table DimCustomer
+	lineageTag: 6d3b6063-7370-4816-8e9a-4582ca6e23fd
+
+	column 'Customer ID'
+		dataType: string
+		lineageTag: 5fb6acbc-4211-425b-b813-9c22c3e8377a
+		summarizeBy: none
+		sourceColumn: Customer ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Name'
+		dataType: string
+		lineageTag: 1a36b901-8a91-48a5-bdc0-40086ec6d35c
+		summarizeBy: none
+		sourceColumn: Customer Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segment
+		dataType: string
+		lineageTag: 4f747af8-5991-454c-8c06-2129c95d7b9f
+		summarizeBy: none
+		sourceColumn: Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCustomer = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\v-krb\OneDrive\Power BI portfolio\Superstore sales dashboard\Sample - Superstore.csv"),[Delimiter=",", Columns=21, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Promoted Headers",{"Customer ID", "Customer Name", "Segment"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns")
+				in
+				    #"Removed Duplicates"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
